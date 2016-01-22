@@ -33,6 +33,11 @@
 /* picker item image for each row */
 - (UIImage *)czpickerView:(CZPickerView *)pickerView imageForRow:(NSInteger)row;
 
+
+- (NSInteger)czpickerView:(CZPickerView *)pickerView indentationLevelForRow:(NSInteger)row;
+
+- (BOOL)czpickerView:(CZPickerView *)pickerView shouldSelectRow:(NSInteger)row;
+
 @end
 
 @protocol CZPickerViewDelegate <NSObject>

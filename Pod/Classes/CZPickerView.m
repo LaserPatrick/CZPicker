@@ -319,54 +319,65 @@ typedef void (^CZDismissCompletionCallback)(void);
     } else if([self.dataSource respondsToSelector:@selector(czpickerView:titleForRow:)]){
         cell.textLabel.text = [self.dataSource czpickerView:self titleForRow:indexPath.row];
     }
+    if([self.dataSource respondsToSelector:@selector(czpickerView:indentationLevelForRow:)]){
+        cell.indentationLevel = [self.dataSource czpickerView:self indentationLevelForRow:indexPath.row];
+    } else{
+        cell.indentationLevel = 0;
+    }
+    cell.indentationWidth = 50;
     return cell;
 }
 
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    BOOL isSelectable = true;
+    if([self.dataSource respondsToSelector:@selector(czpickerView:shouldSelectRow:)]){
+        isSelectable = [self.dataSource czpickerView:self shouldSelectRow:indexPath.row];
+    }
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if(!self.selectedIndexPaths){
-        self.selectedIndexPaths = [NSMutableArray new];
-    }
-    // the row has already been selected
-    
-    if (self.allowMultipleSelection){
-        
-        if([self.selectedIndexPaths containsObject:indexPath]){
-            [self.selectedIndexPaths removeObject:indexPath];
-            cell.accessoryType = UITableViewCellAccessoryNone;
-        } else {
-            [self.selectedIndexPaths addObject:indexPath];
-            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    if (isSelectable){
+        if(!self.selectedIndexPaths){
+            self.selectedIndexPaths = [NSMutableArray new];
         }
+        // the row has already been selected
         
-    } else { //single selection mode
-        
-        if (self.selectedIndexPaths.count > 0){// has selection
-            NSIndexPath *prevIp = (NSIndexPath *)self.selectedIndexPaths[0];
-            UITableViewCell *prevCell = [tableView cellForRowAtIndexPath:prevIp];
-            if(indexPath.row != prevIp.row){ //different cell
-                prevCell.accessoryType = UITableViewCellAccessoryNone;
-                cell.accessoryType = UITableViewCellAccessoryCheckmark;
-                [self.selectedIndexPaths removeObject:prevIp];
-                [self.selectedIndexPaths addObject:indexPath];
-            } else {//same cell
+        if (self.allowMultipleSelection){
+            
+            if([self.selectedIndexPaths containsObject:indexPath]){
+                [self.selectedIndexPaths removeObject:indexPath];
                 cell.accessoryType = UITableViewCellAccessoryNone;
-                self.selectedIndexPaths = [NSMutableArray new];
+            } else {
+                [self.selectedIndexPaths addObject:indexPath];
+                cell.accessoryType = UITableViewCellAccessoryCheckmark;
             }
-        } else {//no selection
-            [self.selectedIndexPaths addObject:indexPath];
-            cell.accessoryType = UITableViewCellAccessoryCheckmark;
-        }
-        
-        if(!self.needFooterView && [self.delegate respondsToSelector:@selector(czpickerView:didConfirmWithItemAtRow:)]){
-            [self dismissPicker:^{
-                [self.delegate czpickerView:self didConfirmWithItemAtRow:indexPath.row];
-            }];
+            
+        } else { //single selection mode
+            
+            if (self.selectedIndexPaths.count > 0){// has selection
+                NSIndexPath *prevIp = (NSIndexPath *)self.selectedIndexPaths[0];
+                UITableViewCell *prevCell = [tableView cellForRowAtIndexPath:prevIp];
+                if(indexPath.row != prevIp.row){ //different cell
+                    prevCell.accessoryType = UITableViewCellAccessoryNone;
+                    cell.accessoryType = UITableViewCellAccessoryCheckmark;
+                    [self.selectedIndexPaths removeObject:prevIp];
+                    [self.selectedIndexPaths addObject:indexPath];
+                } else {//same cell
+                    cell.accessoryType = UITableViewCellAccessoryNone;
+                    self.selectedIndexPaths = [NSMutableArray new];
+                }
+            } else {//no selection
+                [self.selectedIndexPaths addObject:indexPath];
+                cell.accessoryType = UITableViewCellAccessoryCheckmark;
+            }
+            
+            if(!self.needFooterView && [self.delegate respondsToSelector:@selector(czpickerView:didConfirmWithItemAtRow:)]){
+                [self dismissPicker:^{
+                    [self.delegate czpickerView:self didConfirmWithItemAtRow:indexPath.row];
+                }];
+            }
         }
     }
-    
 }
 
 #pragma mark - Notification Handler
