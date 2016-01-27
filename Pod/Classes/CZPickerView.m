@@ -9,7 +9,7 @@
 
 #define CZP_FOOTER_HEIGHT 44.0
 #define CZP_HEADER_HEIGHT 44.0
-#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1
 #define CZP_BACKGROUND_ALPHA 0.9
 #else
 #define CZP_BACKGROUND_ALPHA 0.3
@@ -302,6 +302,7 @@ typedef void (^CZDismissCompletionCallback)(void);
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier: cellIdentifier];
     }
+    [cell setTintColor:self.headerBackgroundColor];
     cell.accessoryType = UITableViewCellAccessoryNone;
     for(NSIndexPath *ip in self.selectedIndexPaths){
         if(ip.row == indexPath.row){
@@ -324,7 +325,7 @@ typedef void (^CZDismissCompletionCallback)(void);
     } else{
         cell.indentationLevel = 0;
     }
-    cell.indentationWidth = 50;
+    cell.indentationWidth = 25;
     return cell;
 }
 
