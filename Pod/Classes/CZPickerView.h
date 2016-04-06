@@ -80,9 +80,9 @@
 /** set pre-selected rows, rows should be array of NSNumber. */
 - (void)setSelectedRows: (NSArray *)rows;
 
-@property id<CZPickerViewDelegate> delegate;
+@property(nonatomic, weak) id<CZPickerViewDelegate> delegate;
 
-@property id<CZPickerViewDataSource> dataSource;
+@property(nonatomic, weak) id<CZPickerViewDataSource> dataSource;
 
 /** whether to show footer (including confirm and cancel buttons), default NO */
 @property BOOL needFooterView;

@@ -328,12 +328,16 @@ typedef void (^CZDismissCompletionCallback)(void);
     } else{
         cell.indentationLevel = 0;
     }
+    
+    if(self.checkmarkColor){
+        cell.tintColor = self.checkmarkColor;
+    }
     cell.indentationWidth = 25;
     return cell;
 }
 
 #pragma mark - UITableViewDelegate
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     BOOL isSelectable = true;
     if([self.dataSource respondsToSelector:@selector(czpickerView:shouldSelectRow:)]){
         isSelectable = [self.dataSource czpickerView:self shouldSelectRow:indexPath.row];
@@ -375,11 +379,11 @@ typedef void (^CZDismissCompletionCallback)(void);
                 cell.accessoryType = UITableViewCellAccessoryCheckmark;
             }
             
-            if(!self.needFooterView && [self.delegate respondsToSelector:@selector(czpickerView:didConfirmWithItemAtRow:)]){
-                [self dismissPicker:^{
-                    [self.delegate czpickerView:self didConfirmWithItemAtRow:indexPath.row];
-                }];
-            }
+        }
+        if(!self.needFooterView && [self.delegate respondsToSelector:@selector(czpickerView:didConfirmWithItemAtRow:)]){
+            [self dismissPicker:^{
+                [self.delegate czpickerView:self didConfirmWithItemAtRow:indexPath.row];
+            }];
         }
     }
 }
@@ -387,8 +391,7 @@ typedef void (^CZDismissCompletionCallback)(void);
 #pragma mark - Notification Handler
 
 - (BOOL)needHandleOrientation{
-    NSArray *supportedOrientations = [[[NSBundle mainBundle] infoDictionary]
-                                      objectForKey:@"UISupportedInterfaceOrientations"];
+    NSArray *supportedOrientations = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"UISupportedInterfaceOrientations"];
     NSMutableSet *set = [NSMutableSet set];
     for(NSString *o in supportedOrientations){
         NSRange range = [o rangeOfString:@"Portrait"];
