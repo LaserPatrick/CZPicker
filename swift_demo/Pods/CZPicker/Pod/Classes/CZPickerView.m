@@ -9,7 +9,7 @@
 
 #define CZP_FOOTER_HEIGHT 44.0
 #define CZP_HEADER_HEIGHT 44.0
-#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1 
 #define CZP_BACKGROUND_ALPHA 0.9
 #else
 #define CZP_BACKGROUND_ALPHA 0.3
@@ -308,7 +308,6 @@ typedef void (^CZDismissCompletionCallback)(void);
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier: cellIdentifier];
     }
-    [cell setTintColor:self.headerBackgroundColor];
     cell.accessoryType = UITableViewCellAccessoryNone;
     for(NSIndexPath *ip in self.selectedIndexPaths){
         if(ip.row == indexPath.row){
@@ -326,75 +325,65 @@ typedef void (^CZDismissCompletionCallback)(void);
     } else if([self.dataSource respondsToSelector:@selector(czpickerView:titleForRow:)]){
         cell.textLabel.text = [self.dataSource czpickerView:self titleForRow:indexPath.row];
     }
-    if([self.dataSource respondsToSelector:@selector(czpickerView:indentationLevelForRow:)]){
-        cell.indentationLevel = [self.dataSource czpickerView:self indentationLevelForRow:indexPath.row];
-    } else{
-        cell.indentationLevel = 0;
-    }
     
     if(self.checkmarkColor){
         cell.tintColor = self.checkmarkColor;
     }
-    cell.indentationWidth = 25;
     return cell;
 }
 
 #pragma mark - UITableViewDelegate
--(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    BOOL isSelectable = true;
-    if([self.dataSource respondsToSelector:@selector(czpickerView:shouldSelectRow:)]){
-        isSelectable = [self.dataSource czpickerView:self shouldSelectRow:indexPath.row];
-    }
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (isSelectable){
-        if(!self.selectedIndexPaths){
-            self.selectedIndexPaths = [NSMutableArray new];
-        }
-        // the row has already been selected
+    if(!self.selectedIndexPaths){
+        self.selectedIndexPaths = [NSMutableArray new];
+    }
+    // the row has already been selected
+    
+    if (self.allowMultipleSelection){
         
-        if (self.allowMultipleSelection){
-            
-            if([self.selectedIndexPaths containsObject:indexPath]){
-                [self.selectedIndexPaths removeObject:indexPath];
-                cell.accessoryType = UITableViewCellAccessoryNone;
-            } else {
-                [self.selectedIndexPaths addObject:indexPath];
-                cell.accessoryType = UITableViewCellAccessoryCheckmark;
-            }
-            
-        } else { //single selection mode
-            
-            if (self.selectedIndexPaths.count > 0){// has selection
-                NSIndexPath *prevIp = (NSIndexPath *)self.selectedIndexPaths[0];
-                UITableViewCell *prevCell = [tableView cellForRowAtIndexPath:prevIp];
-                if(indexPath.row != prevIp.row){ //different cell
-                    prevCell.accessoryType = UITableViewCellAccessoryNone;
-                    cell.accessoryType = UITableViewCellAccessoryCheckmark;
-                    [self.selectedIndexPaths removeObject:prevIp];
-                    [self.selectedIndexPaths addObject:indexPath];
-                } else {//same cell
-                    cell.accessoryType = UITableViewCellAccessoryNone;
-                    self.selectedIndexPaths = [NSMutableArray new];
-                }
-            } else {//no selection
-                [self.selectedIndexPaths addObject:indexPath];
-                cell.accessoryType = UITableViewCellAccessoryCheckmark;
-            }
-            
+        if([self.selectedIndexPaths containsObject:indexPath]){
+            [self.selectedIndexPaths removeObject:indexPath];
+            cell.accessoryType = UITableViewCellAccessoryNone;
+        } else {
+            [self.selectedIndexPaths addObject:indexPath];
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
         }
+        
+    } else { //single selection mode
+        
+        if (self.selectedIndexPaths.count > 0){// has selection
+            NSIndexPath *prevIp = (NSIndexPath *)self.selectedIndexPaths[0];
+            UITableViewCell *prevCell = [tableView cellForRowAtIndexPath:prevIp];
+            if(indexPath.row != prevIp.row){ //different cell
+                prevCell.accessoryType = UITableViewCellAccessoryNone;
+                cell.accessoryType = UITableViewCellAccessoryCheckmark;
+                [self.selectedIndexPaths removeObject:prevIp];
+                [self.selectedIndexPaths addObject:indexPath];
+            } else {//same cell
+                cell.accessoryType = UITableViewCellAccessoryNone;
+                self.selectedIndexPaths = [NSMutableArray new];
+            }
+        } else {//no selection
+            [self.selectedIndexPaths addObject:indexPath];
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        }
+        
         if(!self.needFooterView && [self.delegate respondsToSelector:@selector(czpickerView:didConfirmWithItemAtRow:)]){
             [self dismissPicker:^{
                 [self.delegate czpickerView:self didConfirmWithItemAtRow:indexPath.row];
             }];
         }
     }
+    
 }
 
 #pragma mark - Notification Handler
 
 - (BOOL)needHandleOrientation{
-    NSArray *supportedOrientations = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"UISupportedInterfaceOrientations"];
+    NSArray *supportedOrientations = [[[NSBundle mainBundle] infoDictionary]
+                                      objectForKey:@"UISupportedInterfaceOrientations"];
     NSMutableSet *set = [NSMutableSet set];
     for(NSString *o in supportedOrientations){
         NSRange range = [o rangeOfString:@"Portrait"];
