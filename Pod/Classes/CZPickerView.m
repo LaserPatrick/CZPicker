@@ -328,10 +328,9 @@ typedef void (^CZDismissCompletionCallback)(void);
     }
     if([self.dataSource respondsToSelector:@selector(czpickerView:indentationLevelForRow:)]){
         cell.indentationLevel = [self.dataSource czpickerView:self indentationLevelForRow:indexPath.row];
-    } else{
+    }else{
         cell.indentationLevel = 0;
     }
-    
     if(self.checkmarkColor){
         cell.tintColor = self.checkmarkColor;
     }
