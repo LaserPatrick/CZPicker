@@ -171,7 +171,7 @@ typedef void (^CZDismissCompletionCallback)(void);
     UITableView *tableView = [[UITableView alloc] initWithFrame:tableRect style:UITableViewStylePlain];
     tableView.delegate = self;
     tableView.dataSource = self;
-    tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     return tableView;
 }
 
@@ -333,6 +333,17 @@ typedef void (^CZDismissCompletionCallback)(void);
     }
     if(self.checkmarkColor){
         cell.tintColor = self.checkmarkColor;
+    }
+    BOOL isSelectable = true;
+    if([self.dataSource respondsToSelector:@selector(czpickerView:shouldSelectRow:)]){
+        isSelectable = [self.dataSource czpickerView:self shouldSelectRow:indexPath.row];
+    }
+    if (isSelectable == false){
+        cell.textLabel.textColor = [UIColor darkGrayColor];
+        cell.backgroundColor = [UIColor colorWithRed:0.8796 green:0.8796 blue:0.8796 alpha:1.0];
+    }else{
+        cell.textLabel.textColor = [UIColor blackColor];
+        cell.backgroundColor = [UIColor clearColor];
     }
     cell.indentationWidth = 25;
     return cell;
