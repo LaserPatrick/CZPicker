@@ -58,6 +58,19 @@
 
 /** delegate method for canceling */
 - (void)czpickerViewDidClickCancelButton:(CZPickerView *)pickerView;
+
+/* picker will show */
+- (void)czpickerViewWillDisplay:(CZPickerView *)pickerView;
+
+/* picker did show */
+- (void)czpickerViewDidDisplay:(CZPickerView *)pickerView;
+
+/* picker will dismiss */
+- (void)czpickerViewWillDismiss:(CZPickerView *)pickerView;
+
+/* picker did dismiss */
+- (void)czpickerViewDidDismiss:(CZPickerView *)pickerView;
+
 @end
 
 @interface CZPickerView : UIView<UITableViewDataSource, UITableViewDelegate>
@@ -73,12 +86,19 @@
 
 /** show the picker */
 - (void)show;
+- (void)showInContainer:(id)container;
+
+/** reload the picker */
+- (void)reloadData;
 
 /** return previously selected row, in array of NSNumber form. */
 - (NSArray *)selectedRows;
 
 /** set pre-selected rows, rows should be array of NSNumber. */
 - (void)setSelectedRows: (NSArray *)rows;
+
+/** unselect all rows */
+- (void)unselectAll;
 
 @property(nonatomic, weak) id<CZPickerViewDelegate> delegate;
 

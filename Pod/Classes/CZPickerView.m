@@ -104,37 +104,60 @@ typedef void (^CZDismissCompletionCallback)(void);
     [UIView animateWithDuration:self.animationDuration delay:0 usingSpringWithDamping:0.7f initialSpringVelocity:3.0f options:UIViewAnimationOptionAllowAnimatedContent animations:^{
         self.containerView.center = self.center;
     } completion:^(BOOL finished) {
-        
+        if([self.delegate respondsToSelector:@selector(czpickerViewDidDisplay:)]){
+            [self.delegate czpickerViewDidDisplay:self];
+        }
     }];
 }
 
-- (void)show{
+- (void)show {
+    UIWindow *mainWindow = [[[UIApplication sharedApplication] delegate] window];
+    self.frame = mainWindow.frame;
+    [self showInContainer:mainWindow];
+}
+
+- (void)showInContainer:(id)container {
     
-    if(self.allowMultipleSelection && !self.needFooterView){
+    if([self.delegate respondsToSelector:@selector(czpickerViewWillDisplay:)]){
+        [self.delegate czpickerViewWillDisplay:self];
+    }
+    if (self.allowMultipleSelection && !self.needFooterView) {
         self.needFooterView = self.allowMultipleSelection;
     }
     
-    UIWindow *mainWindow = [[[UIApplication sharedApplication] delegate] window];
-    self.frame = mainWindow.frame;
-    [mainWindow addSubview:self];
-    [self setupSubviews];
-    [self performContainerAnimation];
-    
-    [UIView animateWithDuration:0.3f animations:^{
-        self.backgroundDimmingView.alpha = CZP_BACKGROUND_ALPHA;
-    }];
+    if ([container respondsToSelector:@selector(addSubview:)]) {
+        [container addSubview:self];
+        
+        [self setupSubviews];
+        [self performContainerAnimation];
+        
+        [UIView animateWithDuration:self.animationDuration animations:^{
+            self.backgroundDimmingView.alpha = CZP_BACKGROUND_ALPHA;
+        }];
+    }
+}
+
+- (void)reloadData{
+    [self.tableView reloadData];
 }
 
 - (void)dismissPicker:(CZDismissCompletionCallback)completion{
+    
+    if([self.delegate respondsToSelector:@selector(czpickerViewWillDismiss:)]){
+        [self.delegate czpickerViewWillDismiss:self];
+    }
     [UIView animateWithDuration:self.animationDuration delay:0 usingSpringWithDamping:0.7f initialSpringVelocity:3.0f options:UIViewAnimationOptionAllowAnimatedContent animations:^{
         self.containerView.center = CGPointMake(self.center.x, self.center.y + self.frame.size.height);
     }completion:^(BOOL finished) {
     }];
     
-    [UIView animateWithDuration:0.3f animations:^{
+    [UIView animateWithDuration:self.animationDuration animations:^{
         self.backgroundDimmingView.alpha = 0.0;
     } completion:^(BOOL finished) {
         if(finished){
+            if([self.delegate respondsToSelector:@selector(czpickerViewDidDismiss:)]){
+                [self.delegate czpickerViewDidDismiss:self];
+            }
             if(completion){
                 completion();
             }
@@ -143,7 +166,7 @@ typedef void (^CZDismissCompletionCallback)(void);
     }];
 }
 
-- (UIView *)buildContainerView{
+- (UIView *)buildContainerView {
     CGFloat widthRatio = _pickerWidth ? _pickerWidth / [UIScreen mainScreen].bounds.size.width : 0.8;
     CGAffineTransform transform = CGAffineTransformMake(widthRatio, 0, 0, 0.8, 0, 0);
     CGRect newRect = CGRectApplyAffineTransform(self.frame, transform);
@@ -292,6 +315,11 @@ typedef void (^CZDismissCompletionCallback)(void);
         NSIndexPath *ip = [NSIndexPath indexPathForRow:[n integerValue] inSection: 0];
         [self.selectedIndexPaths addObject:ip];
     }
+}
+
+- (void)unselectAll {
+    self.selectedIndexPaths = [NSMutableArray new];
+    [self.tableView reloadData];
 }
 
 #pragma mark - UITableViewDataSource
