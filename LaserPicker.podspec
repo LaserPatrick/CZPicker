@@ -8,19 +8,19 @@
 #
 
 Pod::Spec.new do |s|
-  s.name             = "CZPicker"
-  s.version          = "0.4.3"
-  s.summary          = "CZPicker is a picker view shown as a popup."
+  s.name             = "LaserPicker"
+  s.version          = "1.0.0"
+  s.summary          = "LaserPicker is a picker view shown as a popup."
   s.description      = <<-DESC
-                        CZPicker is flexible. It is shown as a popup with customizations.
+                        LaserPicker is flexible. It is shown as a popup with customizations.
 
                        DESC
-  s.homepage         = "https://github.com/chenzeyu/CZPicker"
+  s.homepage         = "https://github.com/LaserSrl/LaserPicker"
   # s.screenshots     = "www.example.com/screenshots_1", "www.example.com/screenshots_2"
   s.license          = 'MIT'
   s.author           = { "chenzeyu" => "zeyufly@gmail.com" }
-  s.source           = { :git => "https://github.com/chenzeyu/CZPicker.git", :tag => s.version.to_s }
-  s.social_media_url = 'https://twitter.com/chenzeyu'
+  s.source           = { :git => "https://github.com/LaserSrl/LaserPicker.git", :tag => s.version.to_s }
+  s.social_media_url = 'https://twitter.com/'
 
   s.platform     = :ios, '8.0'
   s.requires_arc = true
