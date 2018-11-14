@@ -1,5 +1,5 @@
 #
-# Be sure to run `pod lib lint CZPicker.podspec' to ensure this is a
+# Be sure to run `pod lib lint LaserPicker.podspec' to ensure this is a
 # valid spec and remove all comments before submitting the spec.
 #
 # Any lines starting with a # are optional, but encouraged
@@ -16,9 +16,8 @@ Pod::Spec.new do |s|
 
                        DESC
   s.homepage         = "https://github.com/LaserSrl/LaserPicker"
-  # s.screenshots     = "www.example.com/screenshots_1", "www.example.com/screenshots_2"
   s.license          = 'MIT'
-  s.author           = { "chenzeyu" => "zeyufly@gmail.com" }
+  s.author           = { "LaserPatrick" => "patrick.negretto@laser-group.com" }
   s.source           = { :git => "https://github.com/LaserSrl/LaserPicker.git", :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/'
 
